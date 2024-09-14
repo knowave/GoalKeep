@@ -77,6 +77,32 @@ export class UserService {
     return user;
   }
 
+  async getUserByEmail(email: string): Promise<User> {
+    const user = await this.userRepository.getUserByEmail(email);
+
+    if (!user) throw new NotFoundException(NOT_FOUND_USER);
+
+    return user;
+  }
+
+  async setCurrentRefreshToken(
+    refreshToken: string,
+    userId: string,
+  ): Promise<User> {
+    const user = await this.getUser(userId);
+
+    user.token = refreshToken;
+    return await this.userRepository.save(user);
+  }
+
+  async removeRefreshToken(id: string): Promise<boolean> {
+    const user = await this.getUser(id);
+
+    user.token = null;
+    await this.userRepository.save(user);
+    return true;
+  }
+
   async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const {
       email,
