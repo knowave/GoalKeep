@@ -1,4 +1,13 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePlanDto } from './create-plan.dto';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { SubPlanDto } from './sub-plan.dto';
 
-export class UpdatePlanDto extends PartialType(CreatePlanDto) {}
+export class UpdatePlanDto {
+  @IsNotEmpty()
+  id: string;
+
+  @IsString()
+  title: string;
+
+  @IsArray()
+  subPlans: SubPlanDto[];
+}

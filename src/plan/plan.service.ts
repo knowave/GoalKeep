@@ -1,26 +1,122 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePlanDto } from './dto/create-plan.dto';
 import { UpdatePlanDto } from './dto/update-plan.dto';
+import { PlanRepository } from './plan.repository';
+import { SubPlanRepository } from './sub-plan.repository';
+import { User } from 'src/user/entities/user.entity';
+import { Plan } from './entities/plan.entity';
+import { UserService } from 'src/user/user.service';
+import { NOT_FOUND_PLAN } from './error/plan.error';
+import { SubPlan } from './entities/sub-plan.entity';
+import { UpdateSubPlansCompletionDto } from './dto/update-sub-plans-completion.dto';
+import { NOT_FOUND_SUB_PLAN } from './error/sub-plan.error';
 
 @Injectable()
 export class PlanService {
-  create(createPlanDto: CreatePlanDto) {
-    return 'This action adds a new plan';
+  constructor(
+    private readonly planRepository: PlanRepository,
+    private readonly subPlanRepository: SubPlanRepository,
+    private readonly userService: UserService,
+  ) {}
+
+  async createPlan(createPlanDto: CreatePlanDto, user: User): Promise<Plan> {
+    const { title, subPlans } = createPlanDto;
+
+    const plan = this.planRepository.create({
+      title,
+      user,
+    });
+
+    const subPlanEntities = subPlans.map((subPlanDto) =>
+      this.subPlanRepository.create({
+        ...subPlanDto,
+        plan,
+        user,
+      }),
+    );
+
+    await this.planRepository.save(plan);
+    await this.subPlanRepository.save(subPlanEntities);
+    await this.userService.incrementUserPlanCount(user.id);
+
+    return plan;
   }
 
-  findAll() {
-    return `This action returns all plan`;
+  async updatePlan(updatePlanDto: UpdatePlanDto, user: User): Promise<Plan> {
+    const { id, title, subPlans } = updatePlanDto;
+    const updatedSubPlans: SubPlan[] = [];
+
+    const plan = await this.planRepository.getPlanByIdAndUserIdWithSubPlan(
+      id,
+      user.id,
+    );
+
+    if (!plan) throw new NotFoundException(NOT_FOUND_PLAN);
+
+    if (title) plan.title = title;
+
+    const existSubPlans = plan.subPlans;
+
+    for (const subPlanDto of subPlans) {
+      const existSubPlan = existSubPlans.find(
+        (subPlan) => subPlan.id === subPlanDto.id,
+      );
+
+      if (existSubPlan) {
+        if (subPlanDto.title) existSubPlan.title = subPlanDto.title;
+        updatedSubPlans.push(existSubPlan);
+      }
+    }
+
+    await this.subPlanRepository.save(updatedSubPlans);
+    return plan;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} plan`;
-  }
+  async updateSubPlansCompletion(
+    updateSubPlansCompletionDto: UpdateSubPlansCompletionDto[],
+    user: User,
+  ): Promise<void> {
+    const updateSubPlans: SubPlan[] = [];
 
-  update(id: number, updatePlanDto: UpdatePlanDto) {
-    return `This action updates a #${id} plan`;
-  }
+    const subPlans =
+      await this.subPlanRepository.getSubPlansByIdAndUserIdWithPlan(
+        updateSubPlansCompletionDto.map(
+          (updateSubPlansCompletion) => updateSubPlansCompletion.id,
+        ),
+        user.id,
+      );
 
-  remove(id: number) {
-    return `This action removes a #${id} plan`;
+    if (subPlans.length === 0) throw new NotFoundException(NOT_FOUND_SUB_PLAN);
+
+    const plan = subPlans[0].plan;
+
+    for (const subPlan of subPlans) {
+      const dto = updateSubPlansCompletionDto.find(
+        (updateSubPlansCompletion) =>
+          updateSubPlansCompletion.id === subPlan.id,
+      );
+
+      if (dto && dto.completed) {
+        subPlan.completed = true;
+        updateSubPlans.push(subPlan);
+      }
+    }
+    const updatedSubPlans = await this.subPlanRepository.save(updateSubPlans);
+
+    const totalSubPlansCount = updatedSubPlans.length;
+    const completedSubPlansCount = updatedSubPlans.filter(
+      (subPlan) => subPlan.completed,
+    ).length;
+
+    const progress = Math.round(
+      (completedSubPlansCount / totalSubPlansCount) * 100,
+    );
+
+    plan.progress = progress;
+    if (plan.progress === 100) {
+      await this.userService.incrementUserPlanCount(user.id, progress);
+    }
+
+    await this.planRepository.save(plan);
   }
 }

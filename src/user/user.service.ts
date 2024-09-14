@@ -156,6 +156,33 @@ export class UserService {
     await this.userRepository.softRemove(user);
   }
 
+  async incrementUserPlanCount(id: string, progress?: number): Promise<void> {
+    const user = await this.getUser(id);
+
+    if (progress === 100) {
+      await this.userRepository.increment(
+        { id: user.id },
+        'completedPlanCount',
+        1,
+      );
+
+      if (user.pendingPlanCount > 0) {
+        await this.userRepository.decrement(
+          { id: user.id },
+          'pendingPlanCount',
+          1,
+        );
+      }
+    } else {
+      await this.userRepository.increment({ id: user.id }, 'planCount', 1);
+      await this.userRepository.increment(
+        { id: user.id },
+        'pendingPlanCount',
+        1,
+      );
+    }
+  }
+
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, SALT_ROUNDS);
   }
