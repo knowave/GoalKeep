@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/base.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { Plan } from './plan.entity';
+import { User } from 'src/user/entities/user.entity';
 
 @Entity()
 export class SubPlan extends BaseEntity {
@@ -15,4 +16,10 @@ export class SubPlan extends BaseEntity {
     onUpdate: 'CASCADE',
   })
   plan: Plan;
+
+  @ManyToOne(() => User, (user) => user.subPlans, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  user: User;
 }

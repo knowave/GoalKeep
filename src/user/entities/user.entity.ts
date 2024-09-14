@@ -5,6 +5,7 @@ import { Plan } from 'src/plan/entities/plan.entity';
 import { Feed } from 'src/community/entities/feed.entity';
 import { Comment } from 'src/community/entities/comment.entity';
 import { Like } from 'src/community/entities/like.entity';
+import { SubPlan } from 'src/plan/entities/sub-plan.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -109,4 +110,10 @@ export class User extends BaseEntity {
     onUpdate: 'CASCADE',
   })
   likes: Like[];
+
+  @OneToMany(() => SubPlan, (subPlan) => subPlan.user, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  subPlans: SubPlan[];
 }
