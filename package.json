@@ -22,6 +22,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/.bin/typeorm -d ./src/database/mysql/type-orm.config.ts",
     "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create -d ./src/database/mysql/migrations -n NewMigration",
     "migration:generate": "yarn typeorm -- migration:generate ./src/database/mysql/migrations/NewMigration",
     "migration:run": "yarn typeorm migration:run",
