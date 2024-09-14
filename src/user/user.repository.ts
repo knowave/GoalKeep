@@ -14,7 +14,7 @@ export class UserRepository extends Repository<User> {
       .getOne();
   }
 
-  async getUserById(id: number): Promise<User> {
+  async getUserById(id: string): Promise<User> {
     return await this.createQueryBuilder('user')
       .where('user.id = :id', { id })
       .getOne();

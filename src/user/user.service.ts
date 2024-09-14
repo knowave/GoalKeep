@@ -69,7 +69,7 @@ export class UserService {
     return savedUser;
   }
 
-  async getUser(id: number): Promise<User> {
+  async getUser(id: string): Promise<User> {
     const user = await this.userRepository.getUserById(id);
 
     if (user) throw new NotFoundException(NOT_FOUND_USER);
@@ -77,7 +77,7 @@ export class UserService {
     return user;
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const {
       email,
       username,
@@ -117,7 +117,7 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  async changePassword(id: number, password: string): Promise<void> {
+  async changePassword(id: string, password: string): Promise<void> {
     const user = await this.getUser(id);
     const hashedPassword = await this.hashPassword(password);
 
@@ -125,7 +125,7 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
-  async removeUser(id: number): Promise<void> {
+  async removeUser(id: string): Promise<void> {
     const user = await this.getUser(id);
     await this.userRepository.softRemove(user);
   }
