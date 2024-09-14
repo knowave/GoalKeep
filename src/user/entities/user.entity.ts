@@ -17,7 +17,12 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', comment: '사용자 닉네임' })
   nickname: string;
 
-  @Column({ type: 'varchar', length: 128, comment: '사용자 비밀번호' })
+  @Column({
+    type: 'varchar',
+    length: 128,
+    comment: '사용자 비밀번호',
+    select: false,
+  })
   password: string;
 
   @Column({ type: 'varchar', comment: '사용자 전화번호' })
@@ -44,6 +49,7 @@ export class User extends BaseEntity {
     length: 128,
     nullable: true,
     comment: '사용자 토큰',
+    select: false,
   })
   token: string;
 
