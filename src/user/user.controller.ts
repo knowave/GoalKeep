@@ -37,7 +37,7 @@ export class UserController {
   @Patch('password/:id')
   async changePassword(
     @Param('id') id: string,
-    @Body() password: string,
+    @Body('password') password: string,
   ): Promise<void> {
     return await this.userService.changePassword(id, password);
   }
