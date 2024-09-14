@@ -1,8 +1,9 @@
 import { BaseEntity } from 'src/common/base.entity';
-import { Column, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { SubPlan } from './sub-plan.entity';
 import { User } from 'src/user/entities/user.entity';
 
+@Entity()
 export class Plan extends BaseEntity {
   @Column({ type: 'varchar', length: 255, comment: '총 계획 이름' })
   title: string;
