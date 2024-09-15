@@ -1,6 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { Injectable } from '@nestjs/common';
+import { GET_USER_BY_ID_FOR_PROFILE } from './constant/get-user-by-id-for-profile.constant';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -41,5 +42,15 @@ export class UserRepository extends Repository<User> {
 
   async followingDecrement(id: string): Promise<void> {
     await this.decrement({ id }, 'followingCount', 1);
+  }
+
+  async getUserByIdForProfile(id: string): Promise<User> {
+    return await this.createQueryBuilder('user')
+      .innerJoin('user.feeds', 'feed')
+      .innerJoin('user.plans', 'plan')
+      .innerJoin('plan.subPlans', 'subPlan')
+      .addSelect(GET_USER_BY_ID_FOR_PROFILE)
+      .where('user.id = :id', { id })
+      .getOne();
   }
 }

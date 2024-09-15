@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
 
 @Controller('user')
 export class UserController {
@@ -24,6 +25,11 @@ export class UserController {
   @Get(':id')
   async getUser(@Param('id') id: string): Promise<User> {
     return await this.userService.getUser(id);
+  }
+
+  @Get('profile')
+  async myProfile(@CurrentUser() user: User): Promise<User> {
+    return await this.userService.myProfile(user.id);
   }
 
   @Patch(':id')

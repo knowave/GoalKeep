@@ -183,6 +183,14 @@ export class UserService {
     }
   }
 
+  async myProfile(id: string): Promise<User> {
+    const user = await this.userRepository.getUserByIdForProfile(id);
+
+    if (!user) throw new NotFoundException(NOT_FOUND_USER);
+
+    return user;
+  }
+
   private async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, SALT_ROUNDS);
   }
