@@ -13,7 +13,6 @@ import {
   NOT_FOUND_SUB_PLAN,
   SUB_PLANS_NOT_FOUND,
 } from './error/sub-plan.error';
-import { SubPlanDto } from './dto/sub-plan.dto';
 
 @Injectable()
 export class PlanService {
@@ -124,6 +123,24 @@ export class PlanService {
     await this.planRepository.save(plan);
   }
 
+  async deletePlan(planId: string, userId: string): Promise<void> {
+    const removeSubPlans: SubPlan[] = [];
+
+    const plan = await this.planRepository.getPlanByIdAndUserIdWithSubPlan(
+      planId,
+      userId,
+    );
+
+    if (!plan) throw new NotFoundException(NOT_FOUND_PLAN);
+
+    for (const subPlan of plan.subPlans) {
+      removeSubPlans.push(subPlan);
+    }
+
+    await this.planRepository.softRemove(plan);
+    await this.subPlanRepository.softRemove(removeSubPlans);
+  }
+
   async deleteSubPlans(subPlanIds: string[], userId: string): Promise<void> {
     const removedSubPlans: SubPlan[] = [];
 
@@ -144,6 +161,6 @@ export class PlanService {
       removedSubPlans.push(subPlan);
     }
 
-    await this.subPlanRepository.remove(removedSubPlans);
+    await this.subPlanRepository.softRemove(removedSubPlans);
   }
 }

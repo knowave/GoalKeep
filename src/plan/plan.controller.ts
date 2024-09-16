@@ -46,6 +46,14 @@ export class PlanController {
     );
   }
 
+  @Delete(':id')
+  async deletePlan(
+    @Param('id') id: string,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    return await this.planService.deletePlan(id, user.id);
+  }
+
   @Delete('sub-plans')
   async deleteSubPlans(
     @Body('subPlanIds') subPlanIds: string[],
