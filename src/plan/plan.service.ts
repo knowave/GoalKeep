@@ -9,7 +9,11 @@ import { UserService } from 'src/user/user.service';
 import { NOT_FOUND_PLAN } from './error/plan.error';
 import { SubPlan } from './entities/sub-plan.entity';
 import { UpdateSubPlansCompletionDto } from './dto/update-sub-plans-completion.dto';
-import { NOT_FOUND_SUB_PLAN } from './error/sub-plan.error';
+import {
+  NOT_FOUND_SUB_PLAN,
+  SUB_PLANS_NOT_FOUND,
+} from './error/sub-plan.error';
+import { SubPlanDto } from './dto/sub-plan.dto';
 
 @Injectable()
 export class PlanService {
@@ -118,5 +122,28 @@ export class PlanService {
     }
 
     await this.planRepository.save(plan);
+  }
+
+  async deleteSubPlans(subPlanIds: string[], userId: string): Promise<void> {
+    const removedSubPlans: SubPlan[] = [];
+
+    const subPlans =
+      await this.subPlanRepository.getSubPlansByIdAndUserIdWithPlan(
+        subPlanIds,
+        userId,
+      );
+
+    if (subPlanIds.length !== subPlans.length) {
+      const missingSubPlanIds = subPlanIds.filter((productId) =>
+        subPlans.every((product) => product.id !== productId),
+      );
+      throw new NotFoundException(SUB_PLANS_NOT_FOUND(missingSubPlanIds));
+    }
+
+    for (const subPlan of subPlans) {
+      removedSubPlans.push(subPlan);
+    }
+
+    await this.subPlanRepository.remove(removedSubPlans);
   }
 }
