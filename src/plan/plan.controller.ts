@@ -35,7 +35,7 @@ export class PlanController {
     return await this.planService.updatePlan(updatePlanDto, user);
   }
 
-  @Patch('complted')
+  @Patch('completed')
   async updateSubPlansCompletion(
     @Body() updateSubPlansCompletionDto: UpdateSubPlansCompletionDto[],
     @CurrentUser() user: User,
@@ -44,5 +44,13 @@ export class PlanController {
       updateSubPlansCompletionDto,
       user,
     );
+  }
+
+  @Delete('sub-plans')
+  async deleteSubPlans(
+    @Body('subPlanIds') subPlanIds: string[],
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    return await this.planService.deleteSubPlans(subPlanIds, user.id);
   }
 }
