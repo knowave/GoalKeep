@@ -13,6 +13,8 @@ import {
   NOT_FOUND_SUB_PLAN,
   SUB_PLANS_NOT_FOUND,
 } from './error/sub-plan.error';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { IPage } from 'src/common/types/page';
 
 @Injectable()
 export class PlanService {
@@ -173,5 +175,26 @@ export class PlanService {
     if (!plan) throw new NotFoundException(NOT_FOUND_PLAN);
 
     return plan;
+  }
+
+  async getMyPlans(
+    paginationDto: PaginationDto,
+    userId: string,
+  ): Promise<IPage<Plan>> {
+    const [plans, totalCount] =
+      await this.planRepository.getPlansByUserIdWithSubPlan(
+        paginationDto,
+        userId,
+      );
+
+    return {
+      data: plans,
+      totalCount,
+      pageInfo: {
+        currentPage: paginationDto.page,
+        totalPages: Math.ceil(totalCount / paginationDto.limit),
+        hasNextPage: paginationDto.page * paginationDto.limit < totalCount,
+      },
+    };
   }
 }

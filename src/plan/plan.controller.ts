@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PlanService } from './plan.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
@@ -14,6 +15,8 @@ import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { Plan } from './entities/plan.entity';
 import { UpdateSubPlansCompletionDto } from './dto/update-sub-plans-completion.dto';
+import { IPage } from 'src/common/types/page';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Controller('plan')
 export class PlanController {
@@ -33,6 +36,14 @@ export class PlanController {
     @CurrentUser() user: User,
   ): Promise<Plan> {
     return await this.planService.getMyPlan(planId, user.id);
+  }
+
+  @Get('')
+  async getMyPlans(
+    @Query() paginationDto: PaginationDto,
+    @CurrentUser() user: User,
+  ): Promise<IPage<Plan>> {
+    return await this.planService.getMyPlans(paginationDto, user.id);
   }
 
   @Patch('')
