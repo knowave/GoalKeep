@@ -18,7 +18,7 @@ import { UpdateSubPlansCompletionDto } from './dto/update-sub-plans-completion.d
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
-@Controller('plan')
+@Controller('plans')
 export class PlanController {
   constructor(private readonly planService: PlanService) {}
 
