@@ -163,4 +163,15 @@ export class PlanService {
 
     await this.subPlanRepository.softRemove(removedSubPlans);
   }
+
+  async getMyPlan(planId: string, userId: string): Promise<Plan> {
+    const plan = await this.planRepository.getPlanByIdAndUserIdWithSubPlan(
+      planId,
+      userId,
+    );
+
+    if (!plan) throw new NotFoundException(NOT_FOUND_PLAN);
+
+    return plan;
+  }
 }

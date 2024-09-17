@@ -27,6 +27,14 @@ export class PlanController {
     return await this.planService.createPlan(createPlanDto, user);
   }
 
+  @Get(':planId')
+  async getMyPlan(
+    @Param('planId') planId: string,
+    @CurrentUser() user: User,
+  ): Promise<Plan> {
+    return await this.planService.getMyPlan(planId, user.id);
+  }
+
   @Patch('')
   async updatePlan(
     @Body() updatePlanDto: UpdatePlanDto,
