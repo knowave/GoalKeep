@@ -14,7 +14,12 @@ export class PlanRepository extends Repository<Plan> {
   ): Promise<Plan> {
     return await this.createQueryBuilder('plan')
       .innerJoin('plan.subPlan', 'subPlan')
-      .addSelect(['subPlan.title'])
+      .addSelect([
+        'plan.title',
+        'plan.progress',
+        'subPlan.title',
+        'subPlan.completed',
+      ])
       .where('plan.id = :id', { id })
       .andWhere('plan.userId = :userId', { userId })
       .getOne();
