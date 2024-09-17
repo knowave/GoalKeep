@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFeedDto } from './dto/create-feed.dto';
-import { UpdateFeedDto } from './dto/update-feed.dto';
+import { CreateFeedDto } from './feed/dto/create-feed.dto';
+import { UpdateFeedDto } from './feed/dto/update-feed.dto';
 
 @Injectable()
 export class CommunityService {
