@@ -43,7 +43,7 @@ export class SignUpDto {
   })
   phoneNumber: string;
 
-  profileImage: UploadFileDto;
+  profileImage?: UploadFileDto;
 
   @MaxLength(100, { message: '100자 이하로 작성해주세요.' })
   introduction: string;
