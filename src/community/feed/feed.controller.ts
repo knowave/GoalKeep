@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
@@ -15,5 +15,13 @@ export class FeedController {
     @CurrentUser() user: User,
   ): Promise<Feed> {
     return await this.feedService.createFeed(createFeedDto, user);
+  }
+
+  @Get(':feedId')
+  async getMyFeed(
+    @Param('feedId') feedId: string,
+    @CurrentUser() user: User,
+  ): Promise<Feed> {
+    return await this.feedService.getMyFeed(feedId, user.id);
   }
 }

@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FeedRepository } from './feed.repository';
 import { Feed } from '../entities/feed.entity';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { User } from 'src/user/entities/user.entity';
 import { S3Service } from 'src/s3/s3.service';
 import { v4 as uuid } from 'uuid';
+import { NOT_FOUND_FEED } from '../error/feed.error';
 
 @Injectable()
 export class FeedService {
@@ -39,5 +40,13 @@ export class FeedService {
         user,
       }),
     );
+  }
+
+  async getMyFeed(feedId: string, userId: string): Promise<Feed> {
+    const feed = await this.feedRepository.getFeedByIdAndUserId(feedId, userId);
+
+    if (!feed) throw new NotFoundException(NOT_FOUND_FEED);
+
+    return feed;
   }
 }
