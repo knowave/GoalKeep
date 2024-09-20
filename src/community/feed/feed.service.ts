@@ -5,7 +5,7 @@ import { CreateFeedDto } from './dto/create-feed.dto';
 import { User } from 'src/user/entities/user.entity';
 import { S3Service } from 'src/s3/s3.service';
 import { v4 as uuid } from 'uuid';
-import { NOT_FOUND_FEED } from '../error/feed.error';
+import { NOT_FOUND_FEED, NOT_FOUND_PUBLIC_FEED } from '../error/feed.error';
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 
@@ -68,5 +68,13 @@ export class FeedService {
         hasNextPage: paginationDto.page * paginationDto.limit < totalCount,
       },
     };
+  }
+
+  async getPublicFeed(feedId: string): Promise<Feed> {
+    const publicFeed = await this.feedRepository.getFeedByIdAndIsPublic(feedId);
+
+    if (!publicFeed) throw new NotFoundException(NOT_FOUND_PUBLIC_FEED);
+
+    return publicFeed;
   }
 }

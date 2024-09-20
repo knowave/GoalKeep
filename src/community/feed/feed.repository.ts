@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Feed } from '../entities/feed.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationEnum } from 'src/common/enums/pagination.enum';
+import { SELECT_FEED_USER } from '../constant/feed.constant';
 
 @Injectable()
 export class FeedRepository extends Repository<Feed> {
@@ -13,15 +14,7 @@ export class FeedRepository extends Repository<Feed> {
   async getFeedByIdAndUserId(id: string, userId: string): Promise<Feed> {
     return await this.createQueryBuilder('feed')
       .innerJoin('feed.user', 'user')
-      .addSelect([
-        'feed.id',
-        'feed.title',
-        'feed.content',
-        'feed.thumbnail',
-        'feed.isPublic',
-        'feed.createdAt',
-        'user.name',
-      ])
+      .addSelect(SELECT_FEED_USER)
       .where('feed.id = :id', { id })
       .andWhere('feed.userId = :userId', { userId })
       .getOne();
@@ -36,15 +29,7 @@ export class FeedRepository extends Repository<Feed> {
 
     const qb = this.createQueryBuilder('feed')
       .innerJoin('feed.user', 'user')
-      .addSelect([
-        'feed.id',
-        'feed.title',
-        'feed.content',
-        'feed.thumbnail',
-        'feed.isPublic',
-        'feed.createdAt',
-        'user.name',
-      ])
+      .addSelect(SELECT_FEED_USER)
       .where('feed.userId = :userId', { userId });
 
     switch (sort) {
@@ -67,5 +52,14 @@ export class FeedRepository extends Repository<Feed> {
 
     qb.offset(skip).limit(limit);
     return await qb.getManyAndCount();
+  }
+
+  async getFeedByIdAndIsPublic(feedId: string): Promise<Feed> {
+    return await this.createQueryBuilder('feed')
+      .innerJoin('feed.user', 'user')
+      .addSelect(SELECT_FEED_USER)
+      .where('feed.id = :feedId', { feedId })
+      .andWhere('feed.isPublic = true')
+      .getOne();
   }
 }
