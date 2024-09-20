@@ -6,6 +6,8 @@ import { User } from 'src/user/entities/user.entity';
 import { S3Service } from 'src/s3/s3.service';
 import { v4 as uuid } from 'uuid';
 import { NOT_FOUND_FEED } from '../error/feed.error';
+import { IPage } from 'src/common/types/page';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class FeedService {
@@ -48,5 +50,23 @@ export class FeedService {
     if (!feed) throw new NotFoundException(NOT_FOUND_FEED);
 
     return feed;
+  }
+
+  async getMyFeeds(
+    paginationDto: PaginationDto,
+    userId: string,
+  ): Promise<IPage<Feed>> {
+    const [feeds, totalCount] =
+      await this.feedRepository.getFeedsByUserIdWithUser(paginationDto, userId);
+
+    return {
+      data: feeds,
+      totalCount,
+      pageInfo: {
+        currentPage: paginationDto.page,
+        totalPages: Math.ceil(totalCount / paginationDto.limit),
+        hasNextPage: paginationDto.page * paginationDto.limit < totalCount,
+      },
+    };
   }
 }
