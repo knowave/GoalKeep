@@ -39,4 +39,11 @@ export class FeedController {
   async getPublicFeed(@Param('feedId') feedId: string): Promise<Feed> {
     return await this.feedService.getPublicFeed(feedId);
   }
+
+  @Get('public')
+  async getPublicFeeds(
+    @Query() paginationDto: PaginationDto,
+  ): Promise<IPage<Feed>> {
+    return await this.feedService.getPublicFeeds(paginationDto);
+  }
 }

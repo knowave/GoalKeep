@@ -62,4 +62,48 @@ export class FeedRepository extends Repository<Feed> {
       .andWhere('feed.isPublic = true')
       .getOne();
   }
+
+  async getFeedsByPublic(
+    paginationDto: PaginationDto,
+  ): Promise<[Feed[], number]> {
+    const { page, limit, sort } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const qb = this.createQueryBuilder('feed')
+      .innerJoin('feed.user', 'user')
+      .select([
+        'feed.id',
+        'feed.title',
+        'feed.content',
+        'feed.thumbnail',
+        'feed.createdAt',
+        'feed.viewCount',
+        'user.id',
+        'user.username',
+        'user.profileImage',
+      ])
+      .where('feed.isPublic = true');
+
+    switch (sort) {
+      case PaginationEnum.CREATE_DATE_ASC:
+        qb.orderBy('feed.createdAt', 'ASC');
+        break;
+      case PaginationEnum.CREATE_DATE_DESC:
+        qb.orderBy('feed.createdAt', 'DESC');
+        break;
+      case PaginationEnum.VIEW_COUNT_ASC:
+        qb.orderBy('feed.viewCount', 'ASC');
+        break;
+      case PaginationEnum.VIEW_COUNT_DESC:
+        qb.orderBy('feed.viewCount', 'DESC');
+        break;
+
+      default:
+        qb.orderBy('feed.createdAt', 'DESC');
+        break;
+    }
+
+    qb.skip(skip).take(limit);
+    return await qb.getManyAndCount();
+  }
 }
