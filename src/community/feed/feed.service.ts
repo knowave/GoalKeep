@@ -103,4 +103,8 @@ export class FeedService {
     await this.feedRepository.increment({ id: feed.id }, 'viewCount', 1);
     return true;
   }
+
+  async topTenFeeds(): Promise<Feed[]> {
+    return;
+  }
 }

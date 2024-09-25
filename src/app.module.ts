@@ -10,7 +10,6 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { FollowModule } from './follow/follow.module';
-import { RedisConfigModule } from './database/redis/redis-config.module';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { RedisConfigModule } from './database/redis/redis-config.module';
     S3Module,
     AuthModule,
     FollowModule,
-    RedisConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
