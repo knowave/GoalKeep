@@ -6,6 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Feed } from '../entities/feed.entity';
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('feeds')
 export class FeedController {
@@ -50,5 +51,11 @@ export class FeedController {
     @Query() paginationDto: PaginationDto,
   ): Promise<IPage<Feed>> {
     return await this.feedService.getPublicFeeds(paginationDto);
+  }
+
+  @Get('top-ten')
+  @Public()
+  async topTenFeeds(): Promise<Feed[]> {
+    return await this.feedService.topTenFeeds();
   }
 }

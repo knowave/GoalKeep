@@ -106,4 +106,15 @@ export class FeedRepository extends Repository<Feed> {
     qb.skip(skip).take(limit);
     return await qb.getManyAndCount();
   }
+
+  async getTopTenFeedsAndSortViewCount(): Promise<Feed[]> {
+    return await this.createQueryBuilder('feed')
+      .innerJoin('feed.user', 'user')
+      .addSelect(SELECT_FEED_USER)
+      .where('feed.isPublic = true')
+      .orderBy('feed.viewCount', 'DESC')
+      .addOrderBy('feed.createdAt, ', 'DESC')
+      .limit(10)
+      .getMany();
+  }
 }

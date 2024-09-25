@@ -8,12 +8,14 @@ import { v4 as uuid } from 'uuid';
 import { NOT_FOUND_FEED, NOT_FOUND_PUBLIC_FEED } from '../error/feed.error';
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { RedisService } from 'src/database/redis/redis.service';
 
 @Injectable()
 export class FeedService {
   constructor(
     private readonly feedRepository: FeedRepository,
     private readonly s3Service: S3Service,
+    private readonly redisService: RedisService,
   ) {}
 
   async createFeed(createFeedDto: CreateFeedDto, user: User): Promise<Feed> {
@@ -105,6 +107,18 @@ export class FeedService {
   }
 
   async topTenFeeds(): Promise<Feed[]> {
-    return;
+    const topTenFeeds = await this.redisService.get('topTenFeeds');
+
+    if (topTenFeeds) return JSON.parse(topTenFeeds);
+
+    const feeds = await this.feedRepository.getTopTenFeedsAndSortViewCount();
+    await this.redisService.set(
+      'topTenFeeds',
+      JSON.stringify(feeds),
+      'EX',
+      300000,
+    );
+
+    return feeds;
   }
 }
