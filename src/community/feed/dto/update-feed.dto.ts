@@ -1,4 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateFeedDto } from './create-feed.dto';
+import { PickType } from '@nestjs/mapped-types';
+import { Feed } from 'src/community/entities/feed.entity';
+import { UploadFileDto } from 'src/common/upload-file.dto';
 
-export class UpdateFeedDto extends PartialType(CreateFeedDto) {}
+export class UpdateFeedDto extends PickType(Feed, [
+  'content',
+  'title',
+  'isPublic',
+]) {
+  thumbnail: UploadFileDto;
+}
