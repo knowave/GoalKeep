@@ -91,4 +91,12 @@ export class FeedController {
 
     return await this.feedService.updateFeed(updateFeedDto, feedId, user.id);
   }
+
+  @Post(':feedId')
+  async removeFeed(
+    @Param('feedId') feedId: string,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    return await this.feedService.removeFeed(feedId, user.id);
+  }
 }

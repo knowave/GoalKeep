@@ -157,4 +157,17 @@ export class FeedService {
 
     return true;
   }
+
+  async removeFeed(feedId: string, userId: string): Promise<void> {
+    const feed = await this.getMyFeed(feedId, userId);
+
+    if (feed.thumbnail) {
+      const urlArr = feed.thumbnail.split('/');
+      const fileName = urlArr.slice(-1)[0];
+
+      await this.s3Service.deleteObject(fileName);
+    }
+
+    await this.feedRepository.softRemove(feed);
+  }
 }
