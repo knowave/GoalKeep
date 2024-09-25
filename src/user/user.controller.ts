@@ -6,20 +6,34 @@ import {
   Patch,
   Param,
   Delete,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post()
-  async create(@Body() createUserDto: SignUpDto): Promise<User> {
-    return await this.userService.signUp(createUserDto);
+  async signUp(
+    @Body() signUpDto: SignUpDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (file) {
+      signUpDto.profileImage = {
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        fileContent: file.buffer,
+      };
+    }
+
+    return await this.userService.signUp(signUpDto);
   }
 
   @Get(':id')
@@ -32,12 +46,19 @@ export class UserController {
     return await this.userService.myProfile(user.id);
   }
 
-  @Patch(':id')
+  @Patch('')
   async updateUser(
-    @Param('id') id: string,
+    @CurrentUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return await this.userService.updateUser(id, updateUserDto);
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    updateUserDto.profileImage = {
+      fileName: file.originalname,
+      mimeType: file.mimetype,
+      fileContent: file.buffer,
+    };
+
+    return await this.userService.updateUser(user.id, updateUserDto);
   }
 
   @Patch('password/:id')
