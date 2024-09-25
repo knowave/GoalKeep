@@ -19,6 +19,11 @@ export class FeedController {
     return await this.feedService.createFeed(createFeedDto, user);
   }
 
+  @Post(':feedId/view-count')
+  async incrementViewCount(@Param('feedId') feedId: string): Promise<boolean> {
+    return await this.feedService.incrementViewCount(feedId);
+  }
+
   @Get(':feedId')
   async getMyFeed(
     @Param('feedId') feedId: string,

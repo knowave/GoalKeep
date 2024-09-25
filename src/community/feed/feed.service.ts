@@ -97,4 +97,10 @@ export class FeedService {
       },
     };
   }
+
+  async incrementViewCount(feedId: string): Promise<boolean> {
+    const feed = await this.getPublicFeed(feedId);
+    await this.feedRepository.increment({ id: feed.id }, 'viewCount', 1);
+    return true;
+  }
 }
