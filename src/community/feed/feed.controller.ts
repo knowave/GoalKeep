@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFile,
+} from '@nestjs/common';
 import { FeedService } from './feed.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
@@ -7,6 +16,7 @@ import { Feed } from '../entities/feed.entity';
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { UpdateFeedDto } from './dto/update-feed.dto';
 
 @Controller('feeds')
 export class FeedController {
@@ -15,8 +25,15 @@ export class FeedController {
   @Post('')
   async createFeed(
     @Body() createFeedDto: CreateFeedDto,
+    @UploadedFile() thumbnail: Express.Multer.File,
     @CurrentUser() user: User,
   ): Promise<Feed> {
+    createFeedDto.thumbnail = {
+      fileName: thumbnail.originalname,
+      mimeType: thumbnail.mimetype,
+      fileContent: thumbnail.buffer,
+    };
+
     return await this.feedService.createFeed(createFeedDto, user);
   }
 
@@ -57,5 +74,21 @@ export class FeedController {
   @Public()
   async topTenFeeds(): Promise<Feed[]> {
     return await this.feedService.topTenFeeds();
+  }
+
+  @Patch('/:feedId')
+  async updateFeed(
+    @Param('feedId') feedId: string,
+    @UploadedFile() thumbnail: Express.Multer.File,
+    @Body() updateFeedDto: UpdateFeedDto,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    updateFeedDto.thumbnail = {
+      fileName: thumbnail.originalname,
+      mimeType: thumbnail.mimetype,
+      fileContent: thumbnail.buffer,
+    };
+
+    return await this.feedService.updateFeed(updateFeedDto, feedId, user.id);
   }
 }

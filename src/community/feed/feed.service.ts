@@ -9,6 +9,7 @@ import { NOT_FOUND_FEED, NOT_FOUND_PUBLIC_FEED } from '../error/feed.error';
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { RedisService } from 'src/database/redis/redis.service';
+import { UpdateFeedDto } from './dto/update-feed.dto';
 
 @Injectable()
 export class FeedService {
@@ -120,5 +121,40 @@ export class FeedService {
     );
 
     return feeds;
+  }
+
+  async updateFeed(
+    updateFeedDto: UpdateFeedDto,
+    feedId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const { content, title, isPublic, thumbnail } = updateFeedDto;
+
+    const feed = await this.getMyFeed(feedId, userId);
+
+    if (thumbnail) {
+      if (feed.thumbnail) {
+        const urlArr = feed.thumbnail.split('/');
+        const fileName = urlArr.slice(-1)[0];
+        await this.s3Service.deleteObject(fileName);
+      }
+
+      const { fileName, mimeType, fileContent } = thumbnail;
+      const newFileName = `${uuid()}-${fileName}`;
+
+      const uploadedFile = await this.s3Service.uploadObject(
+        newFileName,
+        fileContent,
+        mimeType,
+      );
+
+      feed.thumbnail = uploadedFile.Key;
+    }
+
+    feed.content = content;
+    feed.title = title;
+    feed.isPublic = isPublic;
+
+    return true;
   }
 }
