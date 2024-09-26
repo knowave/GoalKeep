@@ -8,5 +8,6 @@ import { FeedModule } from 'src/feed/feed.module';
   imports: [FeedModule],
   providers: [CommentService, CommentRepository],
   controllers: [CommentController],
+  exports: [CommentService],
 })
 export class CommentModule {}
