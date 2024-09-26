@@ -42,8 +42,19 @@ export class CommentService {
 
   async getCommentsByFeedId(
     paginationDto: PaginationDto,
-    feeId: string,
+    feedId: string,
   ): Promise<IPage<Comment>> {
-    return;
+    const [comments, totalCount] =
+      await this.commentRepository.getCommentsByFeedId(paginationDto, feedId);
+
+    return {
+      data: comments,
+      totalCount,
+      pageInfo: {
+        currentPage: paginationDto.page,
+        totalPages: Math.ceil(totalCount / paginationDto.limit),
+        hasNextPage: paginationDto.page * paginationDto.limit < totalCount,
+      },
+    };
   }
 }

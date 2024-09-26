@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PaginationEnum } from 'src/common/enums/pagination.enum';
 import { Comment } from 'src/feed/entities/comment.entity';
 import { DataSource, Repository } from 'typeorm';
 
@@ -24,6 +25,7 @@ export class CommentRepository extends Repository<Comment> {
         'comment.likeCount',
         'user.username',
         'user.nickname',
+        'user.profileImage',
         'feed.id',
         'feed.title',
         'feed.thumbnail',
@@ -38,7 +40,36 @@ export class CommentRepository extends Repository<Comment> {
     feedId: string,
   ): Promise<[Comment[], number]> {
     const { page = 1, limit, sort } = paginationDto;
+    const skip = (page - 1) * limit;
 
-    return;
+    const qb = this.createQueryBuilder('comment')
+      .innerJoin('comment.user', 'user')
+      .addSelect([
+        'comment.id',
+        'comment.content',
+        'comment.likeCount',
+        'comment.createdAt',
+        'comment.updatedAt',
+        'user.username',
+        'user.nickname',
+        'user.profileImage',
+      ])
+      .where('comment.feedId = :feedId', { feedId });
+
+    switch (sort) {
+      case PaginationEnum.CREATE_DATE_ASC:
+        qb.orderBy('comment.createdAt', 'ASC');
+        break;
+      case PaginationEnum.CREATE_DATE_DESC:
+        qb.orderBy('comment.createdAt', 'DESC');
+        break;
+
+      default:
+        qb.orderBy('comment.createdAt', 'DESC');
+        break;
+    }
+
+    qb.offset(skip).limit(limit);
+    return await qb.getManyAndCount();
   }
 }
