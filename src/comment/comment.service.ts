@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FeedService } from 'src/feed/feed.service';
 import { CommentRepository } from './comment.repository';
 import { Comment } from 'src/feed/entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
+import { NOT_FOUND_COMMENT } from './error/comment.error';
 
 @Injectable()
 export class CommentService {
@@ -23,5 +24,17 @@ export class CommentService {
       }),
     );
     return;
+  }
+
+  async getMyCommentById(commentId: string, userId: string): Promise<Comment> {
+    const comment =
+      await this.commentRepository.getCommentByIdAndUserIdWithUserAndFeed(
+        commentId,
+        userId,
+      );
+
+    if (!comment) throw new NotFoundException(NOT_FOUND_COMMENT);
+
+    return comment;
   }
 }
