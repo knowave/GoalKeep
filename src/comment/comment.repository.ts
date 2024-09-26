@@ -85,4 +85,10 @@ export class CommentRepository extends Repository<Comment> {
       .andWhere('comment.userId = :userId', { userId })
       .getOne();
   }
+
+  async getCommentById(commentId: string): Promise<Comment> {
+    return await this.createQueryBuilder('comment')
+      .where('comment.id = :commentId', { commentId })
+      .getOne();
+  }
 }

@@ -80,4 +80,12 @@ export class CommentService {
 
     await this.commentRepository.softRemove(comment);
   }
+
+  async getCommentById(commentId: string): Promise<Comment> {
+    const comment = await this.commentRepository.getCommentById(commentId);
+
+    if (!comment) throw new NotFoundException(NOT_FOUND_COMMENT);
+
+    return comment;
+  }
 }
