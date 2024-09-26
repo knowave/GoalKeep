@@ -3,6 +3,7 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationEnum } from 'src/common/enums/pagination.enum';
 import { Comment } from 'src/feed/entities/comment.entity';
 import { DataSource, Repository } from 'typeorm';
+import { DeleteCommentDto } from './dto/delete-comment.dto';
 
 @Injectable()
 export class CommentRepository extends Repository<Comment> {
@@ -71,5 +72,17 @@ export class CommentRepository extends Repository<Comment> {
 
     qb.offset(skip).limit(limit);
     return await qb.getManyAndCount();
+  }
+
+  async getCommentByIdAndFeedIdAndUserId(
+    deleteCommentDto: DeleteCommentDto,
+  ): Promise<Comment> {
+    const { commentId, feedId, userId } = deleteCommentDto;
+
+    return await this.createQueryBuilder('comment')
+      .where('comment.id = :commentId', { commentId })
+      .andWhere('comment.feedId = :feedId', { feedId })
+      .andWhere('comment.userId = :userId', { userId })
+      .getOne();
   }
 }

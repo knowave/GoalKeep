@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -59,6 +60,19 @@ export class CommentController {
     return await this.commentService.updateComment({
       content,
       feedId,
+      userId: user.id,
+    });
+  }
+
+  @Delete(':feedId/:commentId')
+  async deleteComment(
+    @Param('feedId') feedId: string,
+    @Param('commentId') commentId: string,
+    @CurrentUser() user: User,
+  ): Promise<void> {
+    return await this.commentService.deleteComment({
+      feedId,
+      commentId,
       userId: user.id,
     });
   }
