@@ -4,6 +4,8 @@ import { CommentRepository } from './comment.repository';
 import { Comment } from 'src/feed/entities/comment.entity';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { NOT_FOUND_COMMENT } from './error/comment.error';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { IPage } from 'src/common/types/page';
 
 @Injectable()
 export class CommentService {
@@ -36,5 +38,12 @@ export class CommentService {
     if (!comment) throw new NotFoundException(NOT_FOUND_COMMENT);
 
     return comment;
+  }
+
+  async getCommentsByFeedId(
+    paginationDto: PaginationDto,
+    feeId: string,
+  ): Promise<IPage<Comment>> {
+    return;
   }
 }

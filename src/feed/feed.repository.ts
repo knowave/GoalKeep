@@ -24,7 +24,7 @@ export class FeedRepository extends Repository<Feed> {
     paginationDto: PaginationDto,
     userId: string,
   ): Promise<[Feed[], number]> {
-    const { page, limit, sort } = paginationDto;
+    const { page = 1, limit, sort } = paginationDto;
     const skip = (page - 1) * limit;
 
     const qb = this.createQueryBuilder('feed')
@@ -66,7 +66,7 @@ export class FeedRepository extends Repository<Feed> {
   async getFeedsByPublic(
     paginationDto: PaginationDto,
   ): Promise<[Feed[], number]> {
-    const { page, limit, sort } = paginationDto;
+    const { page = 1, limit, sort } = paginationDto;
     const skip = (page - 1) * limit;
 
     const qb = this.createQueryBuilder('feed')

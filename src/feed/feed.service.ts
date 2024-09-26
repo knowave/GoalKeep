@@ -82,21 +82,17 @@ export class FeedService {
   }
 
   async getPublicFeeds(paginationDto: PaginationDto): Promise<IPage<Feed>> {
-    const { page, limit, sort } = paginationDto;
-
-    const [feeds, totalCount] = await this.feedRepository.getFeedsByPublic({
-      page,
-      limit,
-      sort,
-    });
+    const [feeds, totalCount] = await this.feedRepository.getFeedsByPublic(
+      paginationDto,
+    );
 
     return {
       data: feeds,
       totalCount,
       pageInfo: {
-        currentPage: page,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNextPage: page * limit < totalCount,
+        currentPage: paginationDto.page,
+        totalPages: Math.ceil(totalCount / paginationDto.limit),
+        hasNextPage: paginationDto.page * paginationDto.limit < totalCount,
       },
     };
   }

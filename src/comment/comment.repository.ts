@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Comment } from 'src/feed/entities/comment.entity';
 import { DataSource, Repository } from 'typeorm';
 
@@ -30,5 +31,14 @@ export class CommentRepository extends Repository<Comment> {
       .where('comment.id = :commentId', { id: commentId })
       .andWhere('comment.userId = :userId', { userId })
       .getOne();
+  }
+
+  async getCommentsByFeedId(
+    paginationDto: PaginationDto,
+    feedId: string,
+  ): Promise<[Comment[], number]> {
+    const { page = 1, limit, sort } = paginationDto;
+
+    return;
   }
 }

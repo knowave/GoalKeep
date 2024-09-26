@@ -48,7 +48,7 @@ export class FollowService {
     paginationDto: PaginationDto,
     userId: string,
   ): Promise<IPage<User>> {
-    const { page, limit } = paginationDto;
+    const { page = 1, limit } = paginationDto;
     const skip = (page - 1) * limit;
 
     const followers = await this.followRepository.getFollowersByUserId(userId);
@@ -73,7 +73,7 @@ export class FollowService {
     paginationDto: PaginationDto,
     userId: string,
   ): Promise<IPage<User>> {
-    const { page, limit } = paginationDto;
+    const { page = 1, limit } = paginationDto;
     const skip = (page - 1) * limit;
 
     const followers = await this.followRepository.getFollowingsByUserId(userId);
