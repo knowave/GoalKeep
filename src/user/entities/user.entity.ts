@@ -2,9 +2,9 @@ import { BaseEntity } from 'src/common/base.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 import { Follow } from './follow.entity';
 import { Plan } from 'src/plan/entities/plan.entity';
-import { Feed } from 'src/community/entities/feed.entity';
-import { Comment } from 'src/community/entities/comment.entity';
-import { Like } from 'src/community/entities/like.entity';
+import { Feed } from 'src/feed/entities/feed.entity';
+import { Comment } from 'src/feed/entities/comment.entity';
+import { Like } from 'src/feed/entities/like.entity';
 import { SubPlan } from 'src/plan/entities/sub-plan.entity';
 
 @Entity()

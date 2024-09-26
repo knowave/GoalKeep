@@ -3,19 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { PlanModule } from './plan/plan.module';
-import { CommunityModule } from './community/community.module';
 import { MysqlModule } from './database/mysql/mysql.module';
 import { S3Module } from './s3/s3.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { FollowModule } from './follow/follow.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
     UserModule,
     PlanModule,
-    CommunityModule,
+    FeedModule,
     MysqlModule,
     S3Module,
     AuthModule,

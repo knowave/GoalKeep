@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Feed } from '../entities/feed.entity';
+import { Feed } from './entities/feed.entity';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { PaginationEnum } from 'src/common/enums/pagination.enum';
-import { SELECT_FEED_USER } from '../constant/feed.constant';
+import { SELECT_FEED_USER } from './constant/feed.constant';
 
 @Injectable()
 export class FeedRepository extends Repository<Feed> {

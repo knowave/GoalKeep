@@ -12,7 +12,7 @@ import { FeedService } from './feed.service';
 import { CreateFeedDto } from './dto/create-feed.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
-import { Feed } from '../entities/feed.entity';
+import { Feed } from './entities/feed.entity';
 import { IPage } from 'src/common/types/page';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { Public } from 'src/common/decorators/public.decorator';
