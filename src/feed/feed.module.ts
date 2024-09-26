@@ -6,6 +6,7 @@ import { UserModule } from 'src/user/user.module';
 import { S3Module } from 'src/s3/s3.module';
 import { RedisConfigModule } from 'src/database/redis/redis-config.module';
 import { FeedRepository } from './feed.repository';
+import { FeedController } from './feed.controller';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { FeedRepository } from './feed.repository';
     RedisConfigModule,
   ],
   providers: [FeedService, FeedRepository],
+  controllers: [FeedController],
   exports: [FeedService],
 })
 export class FeedModule {}
