@@ -166,4 +166,12 @@ export class FeedService {
 
     await this.feedRepository.softRemove(feed);
   }
+
+  async incrementLikeCountByFeed(feedId: string): Promise<void> {
+    await this.feedRepository.increment({ id: feedId }, 'likeCount', 1);
+  }
+
+  async decrementLikeCountByFeed(feedId: string): Promise<void> {
+    await this.feedRepository.decrement({ id: feedId }, 'likeCount', 1);
+  }
 }
