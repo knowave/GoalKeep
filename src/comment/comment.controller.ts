@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { User } from 'src/user/entities/user.entity';
@@ -40,5 +48,18 @@ export class CommentController {
       { page, limit, sort },
       feedId,
     );
+  }
+
+  @Patch(':feedId')
+  async updateComment(
+    @Param('feedId') feedId: string,
+    @Body('content') content: string,
+    @CurrentUser() user: User,
+  ): Promise<boolean> {
+    return await this.commentService.updateComment({
+      content,
+      feedId,
+      userId: user.id,
+    });
   }
 }

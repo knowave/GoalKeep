@@ -6,6 +6,7 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { NOT_FOUND_COMMENT } from './error/comment.error';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { IPage } from 'src/common/types/page';
+import { UpdateCommentDto } from './dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -56,5 +57,15 @@ export class CommentService {
         hasNextPage: paginationDto.page * paginationDto.limit < totalCount,
       },
     };
+  }
+
+  async updateComment(updateCommentDto: UpdateCommentDto): Promise<boolean> {
+    const { content, feedId, userId } = updateCommentDto;
+
+    const comment = await this.getMyCommentById(feedId, userId);
+
+    comment.content = content;
+    await this.commentRepository.save(comment);
+    return true;
   }
 }
