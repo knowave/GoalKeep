@@ -1,6 +1,6 @@
 import { PickType } from '@nestjs/mapped-types';
-import { Feed } from 'src/community/feed/entities/feed.entity';
 import { UploadFileDto } from 'src/common/upload-file.dto';
+import { Feed } from '../entities/feed.entity';
 
 export class UpdateFeedDto extends PickType(Feed, [
   'content',
