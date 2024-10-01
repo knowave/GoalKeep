@@ -27,3 +27,5 @@ export const AWS_REGION = process.env.AWS_REGION;
 // REDIS Environment Variables
 export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = process.env.REDIS_PORT;
+
+export const IS_PROD = process.env.NODE_ENV === 'prod' ? true : false;

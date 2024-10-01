@@ -4,6 +4,7 @@ import {
   DATABASE_PASSWORD,
   DATABASE_PORT,
   DATABASE_USER,
+  IS_PROD,
 } from 'src/common/env';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
@@ -16,9 +17,9 @@ export const ormModuleOptions: DataSourceOptions = {
   database: DATABASE_NAME,
   entities: [__dirname + '../../../**/entities/*.entity{.ts,.js}'],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
-  synchronize: false,
+  synchronize: IS_PROD,
   migrationsRun: false,
-  logging: process.env.NODE_ENV === 'prod' ? true : false,
+  logging: IS_PROD,
 };
 
 export const AppDataSource = new DataSource(ormModuleOptions);
