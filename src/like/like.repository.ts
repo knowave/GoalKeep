@@ -15,6 +15,18 @@ export class LikeRepository extends Repository<Like> {
     return await this.createQueryBuilder('like')
       .where('like.feedId = :feedId', { feedId })
       .andWhere('like.userId = :userId', { userId })
+      .withDeleted()
+      .getOne();
+  }
+
+  async getLikeByCommentIdAndUserId(
+    commentId: string,
+    userId: string,
+  ): Promise<Like> {
+    return await this.createQueryBuilder('like')
+      .where('like.commentId = :commentId', { commentId })
+      .andWhere('like.userId = :userId', { userId })
+      .withDeleted()
       .getOne();
   }
 }

@@ -20,15 +20,48 @@ export class LikeService {
     );
 
     if (isLike) {
-      await this.feedService.decrementLikeCountByFeed(feedId);
-      await this.likeRepository.softRemove(isLike);
-
-      return false;
+      if (isLike.deletedAt) {
+        await this.likeRepository.restore(isLike.id);
+        await this.feedService.incrementLikeCountByFeed(feedId);
+        return true;
+      } else {
+        await this.feedService.decrementLikeCountByFeed(feedId);
+        await this.likeRepository.softRemove(isLike);
+        return false;
+      }
     } else {
       await this.feedService.incrementLikeCountByFeed(feedId);
       await this.likeRepository.save(
         this.likeRepository.create({
           feed,
+          user,
+        }),
+      );
+
+      return true;
+    }
+  }
+
+  async commentLike(commentId: string, user: User): Promise<boolean> {
+    const comment = await this.commentService.getCommentById(commentId);
+    const isLike = await this.likeRepository.getLikeByCommentIdAndUserId(
+      commentId,
+      user.id,
+    );
+
+    if (isLike) {
+      if (isLike.deletedAt) {
+        await this.likeRepository.restore(isLike.id);
+        await this.commentService.incrementLikeCountByComment(commentId);
+      } else {
+        await this.commentService.decrementLikeCountByComment(commentId);
+        await this.likeRepository.softRemove(isLike);
+      }
+    } else {
+      await this.commentService.incrementLikeCountByComment(commentId);
+      await this.likeRepository.save(
+        this.likeRepository.create({
+          comment,
           user,
         }),
       );

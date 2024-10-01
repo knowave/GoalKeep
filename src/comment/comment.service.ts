@@ -88,4 +88,12 @@ export class CommentService {
 
     return comment;
   }
+
+  async incrementLikeCountByComment(commentId: string): Promise<void> {
+    await this.commentRepository.increment({ id: commentId }, 'likeCount', 1);
+  }
+
+  async decrementLikeCountByComment(commentId: string): Promise<void> {
+    await this.commentRepository.decrement({ id: commentId }, 'likeCount', 1);
+  }
 }
